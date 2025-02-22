@@ -52,9 +52,7 @@ jobs:
     env:
       DISTRO_TO_BUILD: ${{ matrix.distro_to_build }}
       TARGETPLATFORM: ${{ matrix.targetplatform }}
-      REPO: crops/yocto
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      REPO: devanlai/yocto
       GHCR_USERNAME: ${{ github.actor }}
       GHCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
@@ -67,5 +65,5 @@ jobs:
 
       # Deploy the images
       - name: Deploy
-        if: ${{ env.DOCKER_PASSWORD != '' && env.GHCR_PASSWORD != '' }}
+        if: ${{ env.GHCR_PASSWORD != '' }}
         run: ./deploy.sh
