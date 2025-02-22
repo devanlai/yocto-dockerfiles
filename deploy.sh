@@ -15,7 +15,7 @@ fi
 
 # Don't deploy on pull requests because it could just be junk code that won't
 # get merged
-if ([ "${GITHUB_EVENT_NAME}" = "push" ] || [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] || [ "${GITHUB_EVENT_NAME}"  = "schedule" ])  && [ "${GITHUB_REF}" = "refs/heads/master" ]; then
+if ([ "${GITHUB_EVENT_NAME}" = "push" ] || [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ] || [ "${GITHUB_EVENT_NAME}"  = "schedule" ])  && [ "${GITHUB_REF}" = "refs/heads/arm64" ]; then
     ${ENGINE_CMD} tag $REPO:$DISTRO_TO_BUILD-base ghcr.io/$REPO:$DISTRO_TO_BUILD-base
     ${ENGINE_CMD} tag $REPO:$DISTRO_TO_BUILD-builder ghcr.io/$REPO:$DISTRO_TO_BUILD-builder
 
