@@ -14,7 +14,6 @@ on:
 
 jobs:
   build-test-deploy:
-    runs-on: ubuntu-latest
     permissions:
       packages: write
     strategy:
@@ -39,6 +38,11 @@ jobs:
         targetplatform: [
           linux/amd64
         ]
+        runner: [
+          ubuntu-latest,
+          ubuntu-24.04-arm
+        ]
+    runs-on: "${{ matrix.runner }}"
     env:
       DISTRO_TO_BUILD: ${{ matrix.distro_to_build }}
       TARGETPLATFORM: ${{ matrix.targetplatform }}
