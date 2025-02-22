@@ -36,12 +36,18 @@ jobs:
           ubuntu-24.04
         ]
         targetplatform: [
-          linux/amd64
+          linux/amd64,
+          linux/arm64
         ]
         runner: [
           ubuntu-latest,
           ubuntu-24.04-arm
         ]
+        exclude:
+          - runner: ubuntu-latest
+            targetplatform: linux/arm64
+          - runner: ubuntu-24.04-arm
+            targetplatform: linux/amd64
     runs-on: "${{ matrix.runner }}"
     env:
       DISTRO_TO_BUILD: ${{ matrix.distro_to_build }}
