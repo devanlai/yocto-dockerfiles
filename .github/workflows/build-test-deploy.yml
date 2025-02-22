@@ -48,13 +48,14 @@ jobs:
             targetplatform: linux/arm64
           - runner: ubuntu-24.04-arm
             targetplatform: linux/amd64
-    runs-on: "${{ matrix.runner }}"
+    runs-on: ${{ matrix.runner }}
     env:
       DISTRO_TO_BUILD: ${{ matrix.distro_to_build }}
       TARGETPLATFORM: ${{ matrix.targetplatform }}
       REPO: devanlai/yocto
       GHCR_USERNAME: ${{ github.actor }}
       GHCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      DOCKER_DEFAULT_PLATFORM: ${{ matrix.targetplatform }}
 
     steps:
       - uses: actions/checkout@v4
