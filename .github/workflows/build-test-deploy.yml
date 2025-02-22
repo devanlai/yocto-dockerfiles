@@ -50,6 +50,7 @@ jobs:
             targetplatform: linux/amd64
     runs-on: ${{ matrix.runner }}
     env:
+      DEFAULT_ARCH: amd64
       DISTRO_TO_BUILD: ${{ matrix.distro_to_build }}
       TARGETPLATFORM: ${{ matrix.targetplatform }}
       REPO: devanlai/yocto

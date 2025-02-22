@@ -14,6 +14,14 @@ if [ "${ENGINE_CMD}" = "" ]; then
     ENGINE_CMD="docker"
 fi
 
+# If building for a nonstandard architecture, append the architecture to the name
+TARGET_ARCH=$(echo "$TARGETPLATFORM" | cut -d'/' -f2)
+if [ "${TARGET_ARCH}" = "${DEFAULT_ARCH}" ] || [ "${TARGET_ARCH}" = "" ]; then
+    SUFFIX=""
+else
+    SUFFIX="-${TARGET_ARCH}"
+fi
+
 # DISTRO_TO_BUILD is essentially the prefix to the "base" and "builder"
 # directories you plan to use. i.e. "fedora-23" or "ubuntu-16.04"
 
@@ -41,7 +49,7 @@ ${ENGINE_CMD} build \
        --build-arg HTTPS_PROXY=$https_proxy \
        --build-arg no_proxy=$no_proxy \
        --build-arg NO_PROXY=$no_proxy \
-       -t $REPO:$TAG .
+       -t $REPO:$TAG$SUFFIX .
 rm $workdir -rf
 cd -
 
@@ -53,12 +61,18 @@ workdir=`mktemp --tmpdir -d tmp-$TAG.XXX`
 # use the builder template to populate the distro specific Dockerfile
 cp dockerfiles/templates/Dockerfile.builder $workdir/Dockerfile
 cp distro-entry.sh $workdir
+
+# Insert the tag suffix if necessary
+sed -i "s/DISTRO_TO_BUILD-base/DISTRO_TO_BUILD-base$SUFFIX/g" $workdir/Dockerfile
+
 sed -i "s/DISTRO_TO_BUILD/$DISTRO_TO_BUILD/g" $workdir/Dockerfile
 
 cp helpers/runbitbake.py $workdir
 cd $workdir
 
 # Replace the rewitt/yocto repo with the one from environment
+sed -i -e "s#crops/yocto#$REPO#" Dockerfile
+
 sed -i -e "s#crops/yocto#$REPO#" Dockerfile
 
 # Lastly build the image
@@ -70,14 +84,14 @@ ${ENGINE_CMD} build \
        --build-arg HTTPS_PROXY=$https_proxy \
        --build-arg no_proxy=$no_proxy \
        --build-arg NO_PROXY=$no_proxy \
-       -t $REPO:$TAG .
+       -t $REPO:$TAG$SUFFIX .
 cd -
 
 # base tests
 ENGINE_CMD=${ENGINE_CMD} \
-    ./tests/container/vnc-test.sh $REPO:$DISTRO_TO_BUILD-base
+    ./tests/container/vnc-test.sh $REPO:$DISTRO_TO_BUILD-base$SUFFIX
 # builder tests
 ENGINE_CMD=${ENGINE_CMD} \
-    ./tests/container/smoke.sh $REPO:$DISTRO_TO_BUILD-builder
+    ./tests/container/smoke.sh $REPO:$DISTRO_TO_BUILD-builder$SUFFIX
 
 rm $workdir -rf
